@@ -12,7 +12,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='speckle_pattern',
-    version='1.2.0',
+    version='1.2.1',
     description='Generate print-ready pattern images for DIC applications.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -35,7 +35,7 @@ setup(
 
     install_requires=[
         'matplotlib>=2.0.0',
-        'numpy>=1.14.0',
+        'numpy>=1.0.0',
         'scipy>=1.0.0',
         'tqdm>=4.10.0',
         'imageio>=2.2.0',
