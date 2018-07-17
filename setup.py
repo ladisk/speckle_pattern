@@ -12,7 +12,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='speckle_pattern',
-    version='1.1.0',
+    version='1.2.0',
     description='Generate print-ready pattern images for DIC applications.',
     long_description=long_description,
     long_description_content_type='text/markdown',

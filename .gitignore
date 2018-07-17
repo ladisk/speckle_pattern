@@ -111,5 +111,8 @@ __pycache__/
 
 test/
 *.jpg
+*.tiff
 !example.jpg
+!example2.jpg
 !example_lines_vertical.jpg
+!example.tiff

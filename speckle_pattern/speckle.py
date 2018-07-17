@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 __author__ = 'Domen Gorjup'
-__version__ = '1.0'
+__version__ = '1.2.0'
 
 """
 Generate print-ready speckle or line patterns to use in DIC applications.
@@ -14,7 +14,7 @@ from numpy.random import multivariate_normal
 from scipy.misc import imresize
 from scipy.ndimage.filters import gaussian_filter
 import matplotlib.pyplot as plt
-from imageio import imwrite
+from imageio import get_writer
 from tqdm import tqdm
 import piexif
 
@@ -64,7 +64,7 @@ def speckle(my, mx, D=3, shape=None, s=0, blur=0.6, value=1.):
     return gaussian_filter(slika, blur), d
 
 
-def speckle_image(shape, D, size_randomness=1, position_randomness=1, speckle_blur=0.6, gridstep=2.2, n_unique=100):
+def speckle_image(shape, D, size_randomness=1, position_randomness=1, speckle_blur=0.6, grid_step=2.2, n_unique=100):
     '''
     Generates an image of shape (w, d), populated with speckles of
     random shape and semi-random position and size. Generates and
@@ -78,7 +78,7 @@ def speckle_image(shape, D, size_randomness=1, position_randomness=1, speckle_bl
     w += 2*border
     
     im = np.ones((int(h), int(w)))
-    grid_size = D * gridstep
+    grid_size = D * grid_step
     
     xs = np.arange(border, w-border//2, grid_size).astype(int)
     ys = np.arange(border, h-border//2, grid_size).astype(int)
@@ -112,14 +112,6 @@ def speckle_image(shape, D, size_randomness=1, position_randomness=1, speckle_bl
     return im
 
 
-def save_image(path, image, dpi, exif=None):
-    """ Saves a generated pattern image as JPEG, configured for printing """
-    if path.split('.')[-1].lower() not in ['jpg', 'jpeg']:
-        path += '.jpg'
-     
-    imwrite(path, np.uint8(image/np.max(image)*255), quality=100, dpi=(dpi, dpi))
-
-
 def add_dpi_meta(path, dpi=300, comment=''):
     exif_dict = piexif.load(path)
     exif_dict["0th"][piexif.ImageIFD.XPComment] = comment.encode('utf16')
@@ -130,11 +122,44 @@ def add_dpi_meta(path, dpi=300, comment=''):
     piexif.insert(exif_bytes, path)
 
 
+def save_image(path, image, dpi, comment=''):
+    """ 
+    Saves a generated pattern image along with metadata 
+    configured for printing.
+    """
+
+    if path.split('.')[-1].lower() not in ['jpg', 'jpeg', 'tif', 'tiff']:
+        path += '.tiff'
+
+    fmt = path.split('.')[-1].lower()
+    kwargs = {}
+
+    if fmt in ['jpg', 'jpeg']:
+        jpeg_kwargs = {
+            'quality': 100,
+        }
+        kwargs.update(jpeg_kwargs)
+
+    elif fmt in ['tiff', 'tif']:
+        tiff_kwargs = {
+            'resolution': (dpi, dpi),
+            'description': comment,
+            'compress': 0,
+        }
+        kwargs.update(tiff_kwargs)
+
+    with get_writer(path, mode='i') as writer:
+        writer.append_data(np.uint8(image/np.max(image)*255), meta=kwargs)
+
+    if fmt in ['jpg', 'jpeg']:
+        add_dpi_meta(path, dpi, comment=comment)
+
+
 def generate_and_save(height, width, dpi, speckle_diameter, path, size_randomness=0.5, 
                         position_randomness=0.5, speckle_blur=1, grid_step=1.2):
     """
     Generates a speckle image of given shape, speckle diameter etc. and saves
-    it as a JPEG image to specified path, configured for printing.
+    it to specified path as JPEG or TIFF, configured for printing.
 
     Parameters
     ----------
@@ -174,23 +199,22 @@ def generate_and_save(height, width, dpi, speckle_diameter, path, size_randomnes
     im = speckle_image((h, w), D, size_randomness, position_randomness, speckle_blur, grid_step)
 
     if path is None:
-        path = f'speckle_{width}x{height}mm_D{speckle_diameter}mm_{dpi}DPI.jpg'
+        path = f'speckle_{width}x{height}mm_D{speckle_diameter}mm_{dpi}DPI.tiff'
 
     # Add exif comment to image:
     image_comment = f'height: {height} mm\nwidth: {width} mm\ndpi: {dpi}\nD: {speckle_diameter} mm\n'\
                     f'size_randomness: {size_randomness}\nposition_randomness: {position_randomness}\n'\
                     f'speckle_blur: {speckle_blur}\ngrid_step: {grid_step}'
     
-    save_image(path, im, dpi)
-    add_dpi_meta(path, dpi, comment=image_comment)
+    save_image(path, im, dpi, comment=image_comment)
     print(f'Image saved to {path}.')
     return im
 
 
 def generate_lines(height, width, dpi, line_width, path, orientation='vertical', N_lines=None):
     """
-    Generates a pattern of lines and saves it as a JPEG image to specified 
-    path, configured for printing.
+    Generates a pattern of lines and saves it to specified 
+    path as JPEG or TIFF, configured for printing.
 
     Parameters
     ----------
@@ -237,14 +261,13 @@ def generate_lines(height, width, dpi, line_width, path, orientation='vertical',
         im[black_id] = 0
 
     image_comment = f'{orientation} lines\nline width: {line_width}\n DPI: {dpi}'
-    save_image(path, im, dpi)
-    add_dpi_meta(path, dpi, comment=image_comment)
+    save_image(path, im, dpi, comment=image_comment)
     print(f'Image saved to {path}.')
     return im
     
 
 if __name__ == '__main__':
-    slika = speckle_image((70, 70), 30, size_randomness=0.75, speckle_blur=1., gridstep=1.2)
+    slika = generate_and_save(70, 70, 200, 3., 'test.tiff', size_randomness=0.75, speckle_blur=1., grid_step=1.2)
     plt.figure(figsize=(7, 7))
     plt.imshow(slika, cmap='gray', interpolation='nearest', vmin=0, vmax=1)
     plt.show()

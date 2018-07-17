@@ -16,13 +16,44 @@ image_height = 50 # mm
 image_width = 100 # mm
 speckle_diameter = 3 # mm
 dpi = 200
-save_path = 'test.jpg'
+save_path = 'example.jpg'
 
 generate_and_save(image_height, image_width, dpi, speckle_diameter, save_path)
 ```
 
 <p align='center'><img src='example.jpg' width=400 alt='random speckle'/></p>
 
+
+#### More speckle generation options
+
+```python
+from speckle_pattern import generate_and_save
+
+image_height = 50 # mm
+image_width = 100 # mm
+speckle_diameter = 7.5 # mm
+dpi = 150
+save_path = 'example2.tiff'
+
+size_randomness = 0.9 # set higher for more speckle size variety
+position_randomness = 2.5 # set higher for more speckle position variety
+speckle_blur = 0. # sigma of smothing Gaussian kernel
+grid_step = 2. # approximate grid step, in terms of speckle diameter `D`
+
+generate_and_save(
+    image_height, 
+    image_width, 
+    dpi, 
+    speckle_diameter, 
+    save_path,
+    size_randomness=size_randomness,
+    position_randomness=position_randomness,
+    speckle_blur=speckle_blur,
+    grid_step=grid_step,
+    )
+```
+
+<p align='center'><img src='example2.jpg' width=400 alt='random speckle 2'/></p>
 
 #### Example line pattern
 
@@ -39,8 +70,7 @@ save_path = f'example_lines_{orientation}.jpg'
 generate_lines(image_height, image_width, dpi, line_width, save_path)
 ```
 
-<p align='center'><img src='example_lines_vertical.jpg' width=400 alt='random speckle'/></p>
-
+<p align='center'><img src='example_lines_vertical.jpg' width=400 alt='vertical lines'/></p>
 
 ### Authors
 
