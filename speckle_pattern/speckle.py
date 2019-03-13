@@ -264,6 +264,59 @@ def generate_lines(height, width, dpi, line_width, path, orientation='vertical',
     save_image(path, im, dpi, comment=image_comment)
     print(f'Image saved to {path}.')
     return im
+
+
+def generate_checkerboard(height, width, dpi, path, line_width=1, N_rows=None):
+    """
+    Generates a checkerboard pattern and saves it to specified 
+    path as JPEG or TIFF, configured for printing.
+
+    Parameters
+    ----------
+    height: float
+        the height of output image in mm
+    width: float
+        the width of output image in mm
+    dpi: float
+        DPI setting for printing
+    path: str, None
+        output file name.
+    line_width: float
+        line width in mm. Defaults to 1.
+    N_rows: float
+        number of lines. If None, `line_width` is used. 
+        Defaults to None.
+
+    Returns
+    -------
+    image: (h, w), ndarray
+        resulting image (grayscale, [0, 1])
+    """
+
+    ppmm = dpi / 25.4
+    w = int(np.round((width * ppmm)))
+    h = int(np.round((height * ppmm)))
+
+    if N_rows is not None:
+        line_width = height // (2*N_rows)
+
+    D = int(np.round(line_width * ppmm))
+
+    im = np.ones((h, w), dtype=np.uint8)
+
+    black_id = np.hstack( [np.clip(np.arange(i*D, i*D+D), 0, h-1) for i in range(0, h//D+1, 2)] )
+    im[black_id] = 0
+
+    # invert values in every other column
+    invert_id = np.hstack( [np.clip(np.arange(i*D, i*D+D), 0, w-1) for i in range(0, w//D+1, 2)] )
+    im[:, invert_id] = 1 - im[:, invert_id]
+
+    im = im * 255
+
+    image_comment = f'checkerboard\nline width: {line_width}\n DPI: {dpi}'
+    save_image(path, im, dpi, comment=image_comment)
+    print(f'Image saved to {path}.')
+    return im
     
 
 if __name__ == '__main__':
