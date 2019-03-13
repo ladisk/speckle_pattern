@@ -72,6 +72,22 @@ generate_lines(image_height, image_width, dpi, line_width, save_path)
 
 <p align='center'><img src='example_lines_vertical.jpg' width=400 alt='vertical lines'/></p>
 
+#### Example checkerboard pattern
+
+```python
+from speckle_pattern import generate_checkerboard
+
+image_height = 50 # mm
+image_width = 100 # mm
+line_width = 4 # mm
+dpi = 200
+save_path = f'example_checkerboard.jpg'
+
+generate_checkerboard(image_height, image_width, dpi, line_width=line_width, path=save_path)
+```
+
+<p align='center'><img src='example_checkerboard.jpg' width=400 alt='checkerboard'/></p>
+
 ### Authors
 
 - [Domen Gorjup](http://ladisk.si/?what=incfl&flnm=gorjup.php)
