@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 __author__ = 'Domen Gorjup'
-__version__ = '1.2.0'
+__version__ = '1.3.1'
 
 """
 Generate print-ready speckle or line patterns to use in DIC applications.
@@ -8,10 +8,8 @@ Generate print-ready speckle or line patterns to use in DIC applications.
 
 from itertools import product
 from random import choice
-
 import numpy as np
 from numpy.random import multivariate_normal
-from scipy.misc import imresize
 from scipy.ndimage.filters import gaussian_filter
 import matplotlib.pyplot as plt
 from imageio import get_writer
