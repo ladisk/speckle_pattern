@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 __author__ = 'Domen Gorjup'
-__version__ = '1.2.0'
+__version__ = '1.2.1'
 
 """
 Generate print-ready speckle or line patterns to use in DIC applications.
@@ -11,7 +11,7 @@ from random import choice
 
 import numpy as np
 from numpy.random import multivariate_normal
-from scipy.misc import imresize
+# from scipy.misc import imresize
 from scipy.ndimage.filters import gaussian_filter
 import matplotlib.pyplot as plt
 from imageio import get_writer
@@ -252,12 +252,16 @@ def generate_lines(height, width, dpi, line_width, path, orientation='vertical',
 
     D = int(np.round(line_width * ppmm))
 
-    im = np.ones((h, w), dtype=np.uint8) * 255
+    im = np.full((h, w), 255, dtype=np.uint8)
     if orientation == 'vertical':
         black_id = np.hstack( [np.arange(i*D, i*D+D) for i in range(0, w//D, 2)] )
+        if black_id[-1] + D < w:
+            black_id = np.hstack([black_id, np.arange(w//D*D, w)])
         im[:, black_id] = 0
     else:
         black_id = np.hstack( [np.arange(i*D, i*D+D) for i in range(0, h//D, 2)] )
+        if black_id[-1] + D < h:
+            black_id = np.hstack([black_id, np.arange(h//D*D, h)])
         im[black_id] = 0
 
     image_comment = f'{orientation} lines\nline width: {line_width}\n DPI: {dpi}'
