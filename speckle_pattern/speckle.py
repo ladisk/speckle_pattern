@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 __author__ = 'Domen Gorjup'
-__version__ = '1.3.1'
 
 """
 Generate print-ready speckle or line patterns to use in DIC applications.
@@ -26,7 +25,7 @@ def speckle(my, mx, D=3, shape=None, s=0, blur=0.6, value=1.):
         if D < 3:
             raise Exception('Set higher speckle diameter (D >= 3 px)!')
         polinom = np.array([ -4.44622133e-06,   1.17748897e-02,   2.58275794e-01, -0.65])
-        s = np.polyval( polinom, D) # Empirično
+        s = np.polyval( polinom, D)
     N = int(s * 300)
     
     if my == 0 and mx == 0 and shape is None:
@@ -40,11 +39,10 @@ def speckle(my, mx, D=3, shape=None, s=0, blur=0.6, value=1.):
     y = np.round(y).astype(int)
     yx = np.column_stack((y, x))
     
-    # Velikost vzorca:
+    # Sample size:
     dx = np.max(yx[:, 1]) - np.min(yx[:, 1])
     dy = np.max(yx[:, 0]) - np.min(yx[:, 0])
     d = np.mean(np.array([dx, dy]))
-    #print(d)
     
     neustrezni_i = []
     
@@ -142,7 +140,6 @@ def save_image(path, image, dpi, comment=''):
         tiff_kwargs = {
             'resolution': (dpi, dpi),
             'description': comment,
-            'compress': 0,
         }
         kwargs.update(tiff_kwargs)
 
@@ -250,12 +247,16 @@ def generate_lines(height, width, dpi, line_width, path, orientation='vertical',
 
     D = int(np.round(line_width * ppmm))
 
-    im = np.ones((h, w), dtype=np.uint8) * 255
+    im = np.full((h, w), 255, dtype=np.uint8)
     if orientation == 'vertical':
         black_id = np.hstack( [np.arange(i*D, i*D+D) for i in range(0, w//D, 2)] )
+        if black_id[-1] + D < w:
+            black_id = np.hstack([black_id, np.arange(w//D*D, w)])
         im[:, black_id] = 0
     else:
         black_id = np.hstack( [np.arange(i*D, i*D+D) for i in range(0, h//D, 2)] )
+        if black_id[-1] + D < h:
+            black_id = np.hstack([black_id, np.arange(h//D*D, h)])
         im[black_id] = 0
 
     image_comment = f'{orientation} lines\nline width: {line_width}\n DPI: {dpi}'

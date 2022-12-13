@@ -1,13 +1,10 @@
 """A setuptools based setup module for the speckle_pattern package."""
 
 from setuptools import setup, find_packages
-from os import path
-
-from speckle_pattern.speckle import __version__
 
 setup(
     name='speckle_pattern',
-    version=__version__,
+    version="1.3.2",
     description='Generate print-ready pattern images for DIC applications.',
     long_description_content_type='text/markdown',
     url='https://github.com/ladisk/speckle_pattern',
@@ -19,7 +16,7 @@ setup(
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Topic :: Scientific/Engineering',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.10',
         "License :: OSI Approved :: MIT License",
     ],
 
