@@ -85,7 +85,7 @@ def speckle_image(shape, D, size_randomness=1, position_randomness=1, speckle_bl
     # Generate unique speckles
     speckles = []
     for i in range(N):
-        Dr = np.clip(D + int(np.random.randn(1) * D * size_randomness*0.2), 2, 2*D)
+        Dr = np.clip(D + int(np.random.randn() * D * size_randomness*0.2), 2, 2*D)
         speckles.append(speckle(0, 0, Dr, blur=speckle_blur)[0])
     print('Random speckle generation complete.')
     
@@ -94,8 +94,8 @@ def speckle_image(shape, D, size_randomness=1, position_randomness=1, speckle_bl
         s_shape = np.array(s.shape)
         dy, dx = (s_shape // 2).astype(int)
         
-        x += int(np.random.randn(1)*(D*position_randomness*0.2))
-        y += int(np.random.randn(1)*(D*position_randomness*0.2))
+        x += int(np.random.randn()*(D*position_randomness*0.2))
+        y += int(np.random.randn()*(D*position_randomness*0.2))
         
         sl = np.s_[y-dy:y+dy, x-dx:x+dx]
         
